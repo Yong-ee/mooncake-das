@@ -667,15 +667,17 @@ if(NOT TARGET gflags::gflags)
     endif()
   endforeach()
 endif()
-if(SKBUILD AND EXISTS "${CMAKE_SOURCE_DIR}/extern/yalantinglibs/CMakeLists.txt")
-  set(YLT_ENABLE_IBV
-      ON
-      CACHE BOOL "Enable yalantinglibs ibverbs support" FORCE)
-  add_subdirectory("${CMAKE_SOURCE_DIR}/extern/yalantinglibs"
-                   "${CMAKE_BINARY_DIR}/_deps/yalantinglibs" EXCLUDE_FROM_ALL)
-else()
-  find_package(yalantinglibs CONFIG REQUIRED)
+
+set(GH_MIRROR "")
+if(DEFINED ENV{ASCEND_GITHUB_MIRROR_URLS})
+  set(GH_MIRROR $ENV{ASCEND_GITHUB_MIRROR_URLS})
 endif()
+if(GH_MIRROR)
+  message(STATUS "Using Github mirror: ${GH_MIRROR}")
+endif()
+
+include(${CMAKE_CURRENT_LIST_DIR}/FindYLT.cmake)
+
 if(USE_SHCA)
   add_compile_definitions(USE_SHCA)
 else()
